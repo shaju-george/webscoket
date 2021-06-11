@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h1></h1>
+    <h1>44rrr</h1>
+    <div><video  autoplay playsinline></video></div>
+    <img src="" alt="image1">
+    <script>
+        /*let socket = new WebSocket('ws://localhost:8000/ws/');
+        let timer = null;
+        socket.onopen = () => {
+            timer = setInterval(() => {
+                socket.send('hello');
+            }, 1000);
+        };socket.onclose = socket.onerror = () => {
+            clearInterval(timer);
+        };*/
+        const video = document.querySelector('video');
+            
+            // get img dom element
+            const img = document.querySelector('img');
+            
+            // request access to webcam
+            navigator.mediaDevices.getUserMedia({video: {width: 426, height: 240}}).then((stream) => video.srcObject = stream);
+            
+            // returns a frame encoded in base64
+            const getFrame = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0);
+                const data = canvas.toDataURL('image/png');
+                return data;
+            };
+    
+            const WS_URL = 'ws://localhost:8000/ws'; // Change this if you serve on different server or port
+            const FPS = 3;
+            const ws = new WebSocket(WS_URL);
+    
+            ws.onopen = () => {
+                console.log(`Connected to ${WS_URL}`);
+                setInterval(() => {
+                    ws.send(getFrame());
+                }, 1000 / FPS);
+            }
+            ws.onmessage = message => {
+                // set the base64 string to the src tag of the image
+                img.src = message.data;
+                console.log(message.data);
+            }
+            ws.onclose = ws.onerror = () => {
+            clearInterval(timer);
+        };
+     
+    </script>
+
+</body>
+</html>
